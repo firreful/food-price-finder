@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fresh Findr - Smart Grocery Price Comparison</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Green and White Palette - Updated Green */
+            --primary-green: #34AE61;
+            --dark-green: #2d9655;
+            --light-green: #8fd5a8;
+            --mint-green: #d1f5e0;
+            --white: #ffffff;
+            --off-white: #f8fafc;
+            --light-gray: #f1f5f9;
+            --gray: #64748b;
+            --dark-gray: #1e293b;
+            
+            /* Shadows */
+            --shadow-sm: 0 2px 8px rgba(52, 174, 97, 0.08);
+            --shadow-md: 0 8px 20px rgba(52, 174, 97, 0.12);
+            --shadow-lg: 0 15px 35px rgba(52, 174, 97, 0.15);
+            --shadow-xl: 0 25px 50px rgba(52, 174, 97, 0.1);
+        }
+
+        body.dark-mode {
+            --off-white: #0f172a;
+            --light-gray: #1e293b;
+            --white: #1a2942;
+            --gray: #cbd5e1;
+            --dark-gray: #f1f5f9;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--off-white);
+            color: var(--dark-gray);
+            transition: background-color 0.4s ease, color 0.4s ease;
+            overflow-x: hidden;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(52, 174, 97, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(52, 174, 97, 0.6);
+            }
+        }
+
+        /* Navbar */
+        .navbar {
+            background: var(--white);
+            border-bottom: 1px solid rgba(52, 174, 97, 0.1);
+            padding: 1.2rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-green);
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            letter-spacing: -0.5px;
+            animation: slideInLeft 0.6s ease;
+        }
+
+        .nav-brand i {
+            font-size: 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            font-size: 1.3rem;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            color: var(--primary-green);
+            background: var(--mint-green);
+            transform: rotate(20deg);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            padding: 4rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: 10%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--white);
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2.5rem;
+            font-weight: 500;
+        }
+
+        /* Search Box */
+        .search-container {
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            animation: fadeInUp 1s ease;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 0.8rem;
+            background: var(--white);
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus-within {
+            box-shadow: var(--shadow-xl);
+            transform: translateY(-3px);
+        }
+
+        .search-box i {
+            color: var(--primary-green);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 1.05rem;
+            color: var(--dark-gray);
+            background: transparent;
+        }
+
+        .search-box input::placeholder {
+            color: var(--gray);
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.8rem;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-btn:hover {
+            transform: translateX(4px);
+            box-shadow: 0 8px 20px rgba(52, 174, 97, 0.3);
+        }
+
+        .search-btn:active {
+            transform: translateX(2px) scale(0.98);
+        }
+
+        /* Stats */
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-weight: 600;
+        }
+
+        .stat i {
+            font-size: 1.4rem;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--dark-gray);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        /* Filters */
+        .filters-wrapper {
+            margin-bottom: 3rem;
+        }
+
+        .filters-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .sort-select {
+            background: var(--white);
+            border: 2px solid rgba(52, 174, 97, 0.2);
+            padding: 0.7rem 1.2rem;
+            border-radius: 0.75rem;
+            color: var(--dark-gray);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .sort-select:hover {
+            border-color: var(--primary-green);
+            background: var(--mint-green);
+        }
+
+        .sort-select:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(52, 174, 97, 0.1);
+        }
+
+        .filters {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.7s ease;
+        }
+
+        .filter-btn {
+            padding: 0.8rem 1.5rem;
+            background: var(--white);
+            border: 2px solid rgba(52, 174, 97, 0.2);
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            color: var(--dark-gray);
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary-green);
+            color: var(--primary-green);
+            background: var(--mint-green);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: var(--white);
+            border-color: transparent;
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Status Banner */
+        .status-banner {
+            background: linear-gradient(135deg, rgba(52, 174, 97, 0.1), rgba(52, 174, 97, 0.05));
+            border: 1px solid rgba(52, 174, 97, 0.3);
+            border-radius: 1rem;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .status-banner i {
+            color: var(--primary-green);
+            font-size: 1.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status-text {
+            flex: 1;
+        }
+
+        .status-text span {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        .status-text strong {
+            color: var(--primary-green);
+            font-weight: 700;
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            animation: fadeInUp 1s ease;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: 1.2rem;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(52, 174, 97, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-12px);
+            box-shadow: var(--shadow-xl);
+            border-color: rgba(52, 174, 97, 0.3);
+        }
+
+        .product-image {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .product-image::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -20%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 50%;
+        }
+
+        .product-emoji {
+            position: relative;
+            z-index: 1;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .product-content {
+            padding: 1.8rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 1rem;
+        }
+
+        .product-name {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--dark-gray);
+        }
+
+        .product-category {
+            display: inline-block;
+            background: rgba(52, 174, 97, 0.1);
+            color: var(--primary-green);
+            padding: 0.4rem 0.9rem;
+            border-radius: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .best-price-banner {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: var(--white);
+            padding: 1.2rem;
+            border-radius: 0.9rem;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .best-price-value {
+            font-size: 1.8rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .best-price-store {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .best-price-store i {
+            color: #d1f5e0;
+        }
+
+        .price-comparison {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(52, 174, 97, 0.08);
+            transition: all 0.2s ease;
+        }
+
+        .price-item:last-child {
+            border-bottom: none;
+        }
+
+        .price-item:hover {
+            padding-left: 0.5rem;
+        }
+
+        .store-name {
+            font-weight: 600;
+            color: var(--dark-gray);
+            font-size: 0.95rem;
+        }
+
+        .price-value {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .price {
+            color: var(--primary-green);
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+        .best-tag {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
+            color: var(--white);
+            padding: 0.3rem 0.7rem;
+            border-radius: 0.4rem;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* Empty State */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--primary-green);
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: var(--dark-gray);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--white);
+            border-top: 1px solid rgba(52, 174, 97, 0.1);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            color: var(--gray);
+            margin-top: 3rem;
+        }
+
+        footer p {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        footer i {
+            color: var(--primary-green);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                padding: 2.5rem 1.5rem;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .search-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .hero-stats {
+                gap: 1.5rem;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                gap: 0.6rem;
+            }
+
+            .filter-btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.85rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .product-card {
+                border-radius: 1rem;
+            }
+
+            .product-content {
+                padding: 1.2rem;
+            }
+
+            .container {
+                padding: 1.5rem 1rem;
+            }
+
+            .filters-header {
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-leaf"></i>
+                <span>Fresh Findr</span>
+            </div>
+            <div class="nav-icons">
+                <div class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">
+                    <i class="fas fa-moon"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Find Fresh Deals in Seconds</h1>
+            <p>Compare grocery prices across stores and save big on your shopping</p>
+            
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search for apples, milk, cheese..." onkeyup="filterSearch()">
+                    <button class="search-btn" onclick="filterSearch()">
+                        <span>Search</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat">
+                    <i class="fas fa-leaf"></i>
+                    <span id="productCount">19</span> Fresh Products
+                </div>
+                <div class="stat">
+                    <i class="fas fa-store"></i>
+                    <span>3</span> Top Stores
+                </div>
+                <div class="stat">
+                    <i class="fas fa-sync-alt"></i>
+                    Updated Daily
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Filters -->
+        <div class="filters-wrapper">
+            <div class="filters-header">
+                <h2 class="section-title">Browse & Compare</h2>
+                <select class="sort-select" onchange="applyFilters()">
+                    <option value="">Sort by...</option>
+                    <option value="price-low">Lowest Price First</option>
+                    <option value="price-high">Highest Price First</option>
+                    <option value="name">Product Name</option>
+                </select>
+            </div>
+
+            <div class="filters">
+                <button class="filter-btn active" onclick="filterByCategory('all')">
+                    <i class="fas fa-th"></i> All Items
+                </button>
+                <button class="filter-btn" onclick="filterByCategory('fruits')">
+                    <i class="fas fa-apple-alt"></i> Fruits
+                </button>
+                <button class="filter-btn" onclick="filterByCategory('vegetables')">
+                    <i class="fas fa-carrot"></i> Vegetables
+                </button>
+                <button class="filter-btn" onclick="filterByCategory('dairy')">
+                    <i class="fas fa-glass-whiskey"></i> Dairy
+                </button>
+                <button class="filter-btn" onclick="filterByCategory('meat')">
+                    <i class="fas fa-drumstick-bite"></i> Meat
+                </button>
+                <button class="filter-btn" onclick="filterByCategory('bakery')">
+                    <i class="fas fa-bread-slice"></i> Bakery
+                </button>
+            </div>
+        </div>
+
+        <!-- Status Banner -->
+        <div class="status-banner">
+            <i class="fas fa-check-circle"></i>
+            <div class="status-text">
+                <span>✓ <strong>All prices are current</strong> - Updated daily at 7:00 AM MST</span>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid" id="productsGrid"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>
+            <i class="fas fa-leaf"></i>
+            &copy; 2026 Fresh Findr - Smart grocery shopping starts here
+        </p>
+    </footer>
+
+    <script>
+        // Product Database
+        const products = [
+            { name: 'Organic Apples', category: 'fruits', emoji: '🍎', prices: { 'Fresh Market': 3.99, 'SuperMart': 4.49, 'Quick Shop': 3.79 } },
+            { name: 'Bananas', category: 'fruits', emoji: '🍌', prices: { 'Fresh Market': 0.99, 'SuperMart': 1.29, 'Quick Shop': 0.89 } },
+            { name: 'Oranges', category: 'fruits', emoji: '🍊', prices: { 'Fresh Market': 2.99, 'SuperMart': 3.49, 'Quick Shop': 2.79 } },
+            { name: 'Strawberries', category: 'fruits', emoji: '🍓', prices: { 'Fresh Market': 4.99, 'SuperMart': 5.49, 'Quick Shop': 4.79 } },
+            { name: 'Blueberries', category: 'fruits', emoji: '🫐', prices: { 'Fresh Market': 5.99, 'SuperMart': 6.49, 'Quick Shop': 5.79 } },
+            
+            { name: 'Carrots Bundle', category: 'vegetables', emoji: '🥕', prices: { 'Fresh Market': 1.99, 'SuperMart': 2.29, 'Quick Shop': 1.79 } },
+            { name: 'Broccoli', category: 'vegetables', emoji: '🥦', prices: { 'Fresh Market': 2.99, 'SuperMart': 3.49, 'Quick Shop': 2.79 } },
+            { name: 'Lettuce', category: 'vegetables', emoji: '🥬', prices: { 'Fresh Market': 2.49, 'SuperMart': 2.99, 'Quick Shop': 2.29 } },
+            { name: 'Tomatoes', category: 'vegetables', emoji: '🍅', prices: { 'Fresh Market': 3.99, 'SuperMart': 4.49, 'Quick Shop': 3.79 } },
+            { name: 'Bell Peppers', category: 'vegetables', emoji: '🫑', prices: { 'Fresh Market': 3.49, 'SuperMart': 3.99, 'Quick Shop': 3.29 } },
+            
+            { name: 'Greek Yogurt', category: 'dairy', emoji: '🥛', prices: { 'Fresh Market': 4.99, 'SuperMart': 4.79, 'Quick Shop': 5.29 } },
+            { name: 'Cheddar Cheese', category: 'dairy', emoji: '🧀', prices: { 'Fresh Market': 6.99, 'SuperMart': 7.49, 'Quick Shop': 6.49 } },
+            { name: 'Milk (1L)', category: 'dairy', emoji: '🥛', prices: { 'Fresh Market': 3.49, 'SuperMart': 3.99, 'Quick Shop': 3.29 } },
+            { name: 'Butter', category: 'dairy', emoji: '🧈', prices: { 'Fresh Market': 5.99, 'SuperMart': 6.49, 'Quick Shop': 5.79 } },
+            
+            { name: 'Chicken Breast', category: 'meat', emoji: '🍗', prices: { 'Fresh Market': 8.99, 'SuperMart': 8.49, 'Quick Shop': 9.49 } },
+            { name: 'Ground Beef', category: 'meat', emoji: '🥩', prices: { 'Fresh Market': 7.99, 'SuperMart': 7.49, 'Quick Shop': 8.49 } },
+            { name: 'Salmon Fillet', category: 'meat', emoji: '🐟', prices: { 'Fresh Market': 12.99, 'SuperMart': 13.99, 'Quick Shop': 12.49 } },
+            
+            { name: 'Whole Wheat Bread', category: 'bakery', emoji: '🍞', prices: { 'Fresh Market': 3.49, 'SuperMart': 3.29, 'Quick Shop': 3.99 } },
+            { name: 'Croissants', category: 'bakery', emoji: '🥐', prices: { 'Fresh Market': 4.99, 'SuperMart': 5.49, 'Quick Shop': 4.79 } },
+        ];
+
+        let currentFilter = 'all';
+        let currentSort = '';
+        let filteredProducts = [...products];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+        });
+
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            
+            if (filteredProducts.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <h3>No products found</h3>
+                        <p>Try a different search or category</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filteredProducts.map((p, idx) => {
+                const prices = Object.entries(p.prices);
+                const lowestPrice = Math.min(...prices.map(([_, price]) => price));
+                const bestStore = prices.find(([_, price]) => price === lowestPrice)[0];
+
+                return `
+                    <div class="product-card" style="animation: fadeInUp ${0.5 + idx * 0.05}s ease;">
+                        <div class="product-image">
+                            <span class="product-emoji">${p.emoji}</span>
+                        </div>
+                        <div class="product-content">
+                            <div class="product-header">
+                                <div>
+                                    <div class="product-name">${p.name}</div>
+                                    <span class="product-category">${p.category}</span>
+                                </div>
+                            </div>
+                            <div class="best-price-banner">
+                                <div class="best-price-value">$${lowestPrice.toFixed(2)}</div>
+                                <div class="best-price-store">
+                                    <i class="fas fa-star"></i>
+                                    ${bestStore}
+                                </div>
+                            </div>
+                            <div class="price-comparison">
+                                ${prices.map(([store, price]) => `
+                                    <div class="price-item">
+                                        <span class="store-name">${store}</span>
+                                        <div class="price-value">
+                                            <span class="price">$${price.toFixed(2)}</span>
+                                            ${price === lowestPrice ? '<span class="best-tag">Best</span>' : ''}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterByCategory(category) {
+            currentFilter = category;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.filter-btn').classList.add('active');
+            applyFilters();
+        }
+
+        function filterSearch() {
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const sortValue = document.querySelector('.sort-select').value;
+            
+            filteredProducts = products.filter(p => {
+                const matchesCategory = currentFilter === 'all' || p.category === currentFilter;
+                const matchesSearch = p.name.toLowerCase().includes(search) || p.category.toLowerCase().includes(search);
+                return matchesCategory && matchesSearch;
+            });
+
+            // Apply sorting
+            if (sortValue === 'price-low') {
+                filteredProducts.sort((a, b) => {
+                    const priceA = Math.min(...Object.values(a.prices));
+                    const priceB = Math.min(...Object.values(b.prices));
+                    return priceA - priceB;
+                });
+            } else if (sortValue === 'price-high') {
+                filteredProducts.sort((a, b) => {
+                    const priceA = Math.min(...Object.values(a.prices));
+                    const priceB = Math.min(...Object.values(b.prices));
+                    return priceB - priceA;
+                });
+            } else if (sortValue === 'name') {
+                filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+            }
+
+            document.getElementById('productCount').textContent = filteredProducts.length;
+            renderProducts();
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        }
+
+        // Load saved theme
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+</body>
+</html>

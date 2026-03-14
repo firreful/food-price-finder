@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fresh Findr - Smart Grocery Price Comparison</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-leaf"></i>
+                <span>Fresh Findr</span>
+            </div>
+            <div class="nav-icons">
+                <div class="theme-toggle" onclick="toggleTheme()">
+                    <i class="fas fa-moon"></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Find Fresh Deals in Seconds</h1>
+            <p>Compare grocery prices across stores and save big</p>
+            
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search for apples, milk, cheese..." onkeyup="filterSearch()">
+                    <button class="search-btn" onclick="filterSearch()">
+                        <span>Search</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat">
+                    <i class="fas fa-leaf"></i>
+                    <span id="productCount">0</span> Fresh Products
+                </div>
+                <div class="stat">
+                    <i class="fas fa-store"></i>
+                    <span>3</span> Top Stores
+                </div>
+                <div class="stat">
+                    <i class="fas fa-sync-alt"></i>
+                    Updated Daily
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="filters-wrapper">
+            <div class="filters-header">
+                <h2 class="section-title">Browse & Compare</h2>
+                <select class="sort-select" onchange="applyFilters()">
+                    <option value="">Sort by...</option>
+                    <option value="price-low">Lowest Price First</option>
+                    <option value="price-high">Highest Price First</option>
+                    <option value="name">Product Name</option>
+                </select>
+            </div>
+
+            <div class="filters" id="categoriesContainer"></div>
+        </div>
+
+        <div class="status-banner" id="statusBanner">
+            <i class="fas fa-check-circle"></i>
+            <div class="status-text">
+                <span>Loading store data...</span>
+            </div>
+        </div>
+
+        <div class="products-grid" id="productsGrid"></div>
+    </div>
+
+    <footer>
+        <p>
+            <i class="fas fa-leaf"></i>
+            &copy; 2026 Fresh Findr - Smart grocery shopping
+        </p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
